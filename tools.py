@@ -17,7 +17,7 @@ class holidayRequest(BaseModel):
 def getCalendar(country: str, year:int, month:int):
     url = 'https://calendarific.com/api/v2/holidays'
     parameters = {
-        'api_key': calendar_config['api_key'],
+        'api_key': '2LUfQBHrDXcB6Z6KAfHaQrTd0RCRrqOU',
         'country': country,
         'year': year,
         'month': month
