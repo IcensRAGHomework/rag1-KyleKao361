@@ -9,6 +9,7 @@ from langchain_core.tools import StructuredTool
 
 calendar_config = get_model_configuration('calendar')
 
+
 class holidayRequest(BaseModel):
     country: str = Field(description="以2字母 iso code表示國家")
     year:int = Field(description="以yyyy表示年分")
