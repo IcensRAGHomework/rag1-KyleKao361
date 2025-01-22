@@ -12,6 +12,9 @@ configurations = {
         "temperature": 0.0,
         "top_p": 1.0,
         "max_token": 4096
+    },
+    "calendar" : {
+        "api_key": os.getenv('CALENDARIFIC_API_KEY')
     }
 }
 
