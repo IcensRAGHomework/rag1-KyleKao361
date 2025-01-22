@@ -122,5 +122,5 @@ def demo(question):
     
     return response
 
-pprint(generate_hw01('2024年台灣10月紀念日有哪些?'))
-pprint(generate_hw02('2024年台灣10月紀念日有哪些?'))
+# pprint(generate_hw01('2024年台灣10月紀念日有哪些?'))
+# pprint(len(json.loads(generate_hw02('2024年台灣10月紀念日有哪些?'))["Result"]))
