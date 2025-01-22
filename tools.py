@@ -24,7 +24,7 @@ def getCalendar(country: str, year:int, month:int):
     }
     response = requests.get(url, params=parameters)
     data = json.loads(response.text)
-    return data['response']['holidays']
+    return data
 
 holiday_data = StructuredTool.from_function(
     func=getCalendar,
