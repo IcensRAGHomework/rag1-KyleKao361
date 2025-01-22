@@ -1,3 +1,4 @@
+import base64
 import json
 import traceback
 
@@ -30,8 +31,7 @@ llm = AzureChatOpenAI(
         openai_api_key=gpt_config['api_key'],
         openai_api_version=gpt_config['api_version'],
         azure_endpoint=gpt_config['api_base'],
-        temperature=gpt_config['temperature'],
-        cache= True
+        temperature=gpt_config['temperature']
 )
 
 examples= [
@@ -106,11 +106,11 @@ def generate_hw03(question2, question3):
         ("human", "{input}"),
         MessagesPlaceholder("agent_scratchpad"),
         ("human", "若是詢問節日清單以{few_shot_prompt}為json範例格式回答"
-          "不要有多餘json文字,若是詢問是否要新增節日以{second_json_spec}為json範例格式回答, 不要有多餘json文字")
+          "不要有多餘json文字,若是詢問是否要新增節日以{third_json_spec}為json範例格式回答, 不要有多餘json文字")
     ])
 
-    second_json_spec = '{"Result":{"add": <是否該將節日加到前面回答的清單, 若已存在則為false反之則為true>,"reason": "<加入或不加入的理由以及該月份清單的所有節日名稱並說是幾月>"} }'
-    prompt = prompt.partial(few_shot_prompt = few_shot_prompt, second_json_spec= second_json_spec)
+    third_json_spec = '{"Result":{"add": <是否該將節日加到前面回答的清單, 若已存在則為false反之則為true>,"reason": "<加入或不加入的理由以及該月份清單的所有節日名稱並說是幾月>"} }'
+    prompt = prompt.partial(few_shot_prompt = few_shot_prompt, third_json_spec= third_json_spec)
 
     tools = [holiday_data]
     agent = create_openai_functions_agent(llm=llm, tools=tools, prompt=prompt)
@@ -136,8 +136,24 @@ def generate_hw03(question2, question3):
     return result_part['output']
     
 def generate_hw04(question):
-    pass
+    prompt_template = ChatPromptTemplate.from_messages([
+        ('system', 'you are a ocr system to get score board and return score of input team with json like {fourth_json_spec}'),
+        ('human', '{input}')
+    ])
+    fourth_json_spec = '{"Result":{"score": <score>} }'
+    prompt_template = prompt_template.partial(fourth_json_spec = fourth_json_spec)
+
+    messages = prompt_template.format_prompt(input=question).to_messages()
+    messages.append(HumanMessage([{ 
+        'type': 'image_url', 
+        'image_url': {'url': f'data:image/jpeg;base64,{get_image("./baseball.png")}'}
+    }]))
+    response = llm.invoke(messages)
+    return response.content
     
+def get_image(path):
+    with open(path, 'rb') as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
 def demo(question):
     llm = AzureChatOpenAI(
             model=gpt_config['model_name'],
@@ -156,5 +172,7 @@ def demo(question):
     
     return response
 
-# pprint(generate_hw01('2024年台灣10月紀念日有哪些?'))
-pprint(generate_hw03('2024年台灣10月紀念日有哪些?', '根據先前的節日清單，這個節日{"date": "10-31", "name": "蔣公誕辰紀念日"}是否有在該月份清單？'))
+print(generate_hw01('2024年台灣10月紀念日有哪些?'))
+# print(generate_hw02('2024年台灣10月紀念日有哪些?'))
+# print(generate_hw03('2024年台灣3月紀念日有哪些?', '根據先前的節日清單，這個節日{"date": "3-29", "name": "青年節"}是否有在該月份清單？'))
+print(generate_hw04('請問中華台北的積分是多少'))
